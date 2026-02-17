@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boya Stok Takip Sistemi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 80px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .login-container h1 { text-align: center; color: #333; margin-bottom: 30px; font-size: 26px; }
+
+        .login-btn-group { display: flex; flex-direction: column; gap: 12px; }
+
+        .login-btn {
+            padding: 14px; border: none; border-radius: 8px;
+            font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;
+        }
+
+        .admin-btn { background: #667eea; color: white; }
+        .admin-btn:hover { background: #5568d3; transform: translateY(-2px); }
+        .guest-btn { background: #48bb78; color: white; }
+        .guest-btn:hover { background: #38a169; transform: translateY(-2px); }
+        .reset-btn { background: #ed8936; color: white; font-size: 14px; padding: 10px; }
+        .reset-btn:hover { background: #dd6b20; }
+        .forgot-btn { background: none; border: none; color: #667eea; font-size: 13px; cursor: pointer; text-decoration: underline; margin-top: 5px; }
+
+        .code-input {
+            width: 100%; padding: 12px; margin: 8px 0;
+            border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;
+        }
+        .code-input:focus { outline: none; border-color: #667eea; }
+
+        .app-container {
+            max-width: 1200px; margin: 0 auto; background: white;
+            border-radius: 15px; padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+        }
+        .header h1 { color: #333; font-size: 24px; }
+        .header-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 6px;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-success { background: #48bb78; color: white; }
+        .btn-warning { background: #ed8936; color: white; }
+        .btn-danger { background: #f56565; color: white; }
+
+        .search-wrapper { position: relative; margin-bottom: 20px; }
+        .search-box {
+            width: 100%; padding: 12px 45px 12px 12px;
+            border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;
+        }
+        .search-box:focus { outline: none; border-color: #667eea; }
+        .search-clear {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: #cbd5e0; border: none; border-radius: 50%;
+            width: 24px; height: 24px; cursor: pointer;
+            font-size: 14px; font-weight: bold; color: #4a5568;
+            display: none; align-items: center; justify-content: center;
+        }
+        .search-clear.visible { display: flex; }
+        .search-clear:hover { background: #a0aec0; }
+
+        .accordion { margin-bottom: 6px; }
+        .accordion-header {
+            background: #f7fafc; padding: 12px 15px; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+            border-radius: 6px; transition: all 0.3s; border: 1px solid #e2e8f0;
+        }
+        .accordion-header:hover { background: #edf2f7; }
+        .accordion-header.active { background: #667eea; color: white; }
+        .accordion-title { font-weight: 700; font-size: 16px; }
+        .accordion-arrow { transition: transform 0.3s; font-size: 14px; }
+        .accordion-arrow.rotated { transform: rotate(180deg); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .accordion-content.open { max-height: 5000px; }
+
+        .paint-list { padding: 5px; }
+        .paint-item {
+            background: white; padding: 10px 15px; margin: 4px 0;
+            border-radius: 6px; transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .paint-item.clickable { cursor: pointer; }
+        .paint-item.clickable:hover { background: #f7fafc; transform: translateX(3px); }
+        .paint-item.critical { background: #fff5f5; border-color: #fc8181; }
+
+        .paint-info { flex: 1; }
+        .paint-name { font-weight: 600; font-size: 15px; margin-bottom: 3px; }
+        .paint-name.critical-text { color: #e53e3e; }
+        .paint-code { font-size: 13px; color: #718096; }
+        .paint-stock { font-weight: 700; font-size: 16px; color: #2d3748; margin-left: 10px; }
+        .paint-stock.critical { color: #e53e3e; }
+        .paint-actions { display: flex; gap: 5px; margin-left: 10px; }
+        .paint-actions button { padding: 5px 10px; font-size: 12px; }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            align-items: center; justify-content: center;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 15px;
+            max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;
+            position: relative;
+        }
+        .modal-close-btn {
+            position: absolute; top: 15px; right: 15px;
+            background: #e2e8f0; border: none; border-radius: 50%;
+            width: 32px; height: 32px; cursor: pointer;
+            font-size: 16px; font-weight: bold; color: #4a5568;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close-btn:hover { background: #cbd5e0; }
+        .modal-header { margin-bottom: 20px; padding-right: 30px; }
+        .modal-header h2 { color: #333; font-size: 22px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #4a5568; font-size: 14px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 10px;
+            border: 2px solid #e2e8f0; border-radius: 6px; font-size: 15px;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #667eea; }
+
+        .button-group { display: flex; gap: 10px; margin-top: 20px; }
+        .button-group .btn { flex: 1; }
+
+        .add-paint-section {
+            background: #f7fafc; padding: 20px; border-radius: 10px;
+            margin-top: 20px; border: 2px dashed #cbd5e0;
+        }
+        .add-paint-section h3 { margin-bottom: 15px; color: #333; }
+
+        .hidden { display: none; }
+        .info-text { text-align: center; color: #718096; font-size: 14px; margin-top: 10px; }
+        .warning-text { text-align: center; color: #ed8936; font-size: 13px; margin-top: 10px; font-weight: 600; }
+        .success-text { text-align: center; color: #48bb78; font-size: 13px; margin-top: 10px; font-weight: 600; }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; align-items: stretch; }
+            .header-buttons { flex-direction: column; }
+            .button-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Giriş Ekranı -->
+    <div id="loginScreen" class="login-container">
+        <h1>🎨 Boya Stok Sistemi</h1>
+        <div class="login-btn-group">
+            <button class="login-btn admin-btn" onclick="showAdminLogin()">Yönetici Girişi</button>
+            <button class="login-btn guest-btn" onclick="showGuestLogin()">Misafir Girişi</button>
+            <button class="login-btn reset-btn" onclick="showResetConfirm()">⚙️ Yönetici Kaydını Sıfırla</button>
+        </div>
+
+        <!-- Yönetici Giriş -->
+        <div id="adminLoginForm" class="hidden" style="margin-top:20px;">
+            <input type="text" id="adminUsername" class="code-input" placeholder="Kullanıcı Adı">
+            <input type="password" id="adminPassword" class="code-input" placeholder="Şifre">
+            <button class="login-btn admin-btn" onclick="loginAdmin()">Giriş Yap</button>
+            <div style="text-align:center; margin-top:10px;">
+                <button class="forgot-btn" onclick="showForgotPassword()">🔑 Şifremi Unuttum</button>
+            </div>
+        </div>
+
+        <!-- Misafir Giriş -->
+        <div id="guestLoginForm" class="hidden" style="margin-top:20px;">
+            <input type="text" id="guestCode" class="code-input" placeholder="Misafir Kodu">
+            <button class="login-btn guest-btn" onclick="loginGuest()">Giriş Yap</button>
+        </div>
+
+        <!-- Şifre Sıfırla (Şifremi Unuttum) -->
+        <div id="forgotPasswordForm" class="hidden" style="margin-top:20px;">
+            <p class="info-text">Acil kodu girin, ardından yeni şifre belirleyin.</p>
+            <input type="password" id="emergencyCode" class="code-input" placeholder="Acil Kod">
+            <div id="newPasswordFields" class="hidden">
+                <input type="text" id="newUsernameField" class="code-input" placeholder="Yeni Kullanıcı Adı">
+                <input type="password" id="newPasswordField" class="code-input" placeholder="Yeni Şifre">
+                <input type="password" id="newPasswordConfirmField" class="code-input" placeholder="Yeni Şifre (Tekrar)">
+                <button class="login-btn admin-btn" onclick="setNewPassword()">Şifreyi Güncelle</button>
+            </div>
+            <div id="emergencyCheckBtn" style="margin-top:8px;">
+                <button class="login-btn admin-btn" onclick="checkEmergencyCode()">Acil Kodu Doğrula</button>
+            </div>
+            <button class="login-btn" onclick="hideForgotPassword()" style="background:#cbd5e0; margin-top:8px;">Geri Dön</button>
+        </div>
+
+        <!-- Sistem Sıfırla (Yönetici kaydını sil - veriler kalır) -->
+        <div id="resetConfirmForm" class="hidden" style="margin-top:20px;">
+            <p class="warning-text">⚠️ Sadece yönetici kaydı silinir, boya verileri KORUNUR!</p>
+            <input type="password" id="resetEmergencyCode" class="code-input" placeholder="Acil Kod">
+            <button class="login-btn reset-btn" onclick="resetAdminOnly()">Yönetici Kaydını Sıfırla</button>
+            <button class="login-btn" onclick="hideResetConfirm()" style="background:#cbd5e0; margin-top:8px;">İptal</button>
+        </div>
+    </div>
+
+    <!-- Yönetici Kayıt Ekranı -->
+    <div id="registerScreen" class="login-container hidden">
+        <h1>🔐 Yönetici Kaydı</h1>
+        <p class="info-text">Lütfen yönetici bilgilerini belirleyin.</p>
+        <div style="margin-top:20px;">
+            <input type="text" id="registerUsername" class="code-input" placeholder="Kullanıcı Adı">
+            <input type="password" id="registerPassword" class="code-input" placeholder="Şifre">
+            <input type="password" id="registerPasswordConfirm" class="code-input" placeholder="Şifre (Tekrar)">
+            <button class="login-btn admin-btn" onclick="registerAdmin()">Kaydet ve Devam Et</button>
+        </div>
+    </div>
+
+    <!-- Ana Uygulama -->
+    <div id="appScreen" class="app-container hidden">
+        <div class="header">
+            <h1>🎨 Boya Stok Yönetimi</h1>
+            <div class="header-buttons">
+                <span id="userInfo" style="font-weight:600;color:#667eea;"></span>
+                <button class="btn btn-danger" onclick="logout()">Çıkış</button>
+            </div>
+        </div>
+
+        <div class="search-wrapper">
+            <input type="text" id="searchBox" class="search-box" placeholder="🔍 Boya ara..." oninput="filterPaints()">
+            <button class="search-clear" id="searchClearBtn" onclick="clearSearch()">✕</button>
+        </div>
+
+        <div id="paintList"></div>
+
+        <div id="addPaintSection" class="add-paint-section hidden">
+            <h3>➕ Yeni Boya Ekle</h3>
+            <div class="form-group">
+                <label>Marka</label>
+                <input type="text" id="newMarka" placeholder="Ör: PULVER">
+            </div>
+            <div class="form-group">
+                <label>Boya Adı</label>
+                <input type="text" id="newAd" placeholder="Ör: RAL 9006 Tex">
+            </div>
+            <div class="form-group">
+                <label>Boya Kodu</label>
+                <input type="text" id="newKod" placeholder="Ör: 09610.09006">
+            </div>
+            <div class="form-group">
+                <label>Başlangıç Stok (kg)</label>
+                <input type="number" id="newStok" placeholder="0" value="0">
+            </div>
+            <div class="form-group">
+                <label>Kritik Stok (kg)</label>
+                <input type="number" id="newKritikStok" placeholder="50" value="50">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-success" onclick="addNewPaint()">Boya Ekle</button>
+                <button class="btn btn-primary" onclick="saveAllData()">Tümünü Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hareket Modal -->
+    <div id="movementModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeModal()">✕</button>
+            <div class="modal-header">
+                <h2 id="modalTitle">Hareket Girişi</h2>
+            </div>
+            <div class="form-group">
+                <label>Miktar (kg)</label>
+                <input type="number" id="movementAmount" placeholder="0" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Kritik Stok (kg)</label>
+                <input type="number" id="criticalStock" placeholder="50" step="0.01">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-success" onclick="addStock()">Stok Ekle</button>
+                <button class="btn btn-danger" onclick="removeStock()">Kullanım Gir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Düzenleme Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeEditModal()">✕</button>
+            <div class="modal-header">
+                <h2>Boya Düzenle</h2>
+            </div>
+            <div class="form-group">
+                <label>Marka</label>
+                <input type="text" id="editMarka">
+            </div>
+            <div class="form-group">
+                <label>Boya Adı</label>
+                <input type="text" id="editAd">
+            </div>
+            <div class="form-group">
+                <label>Boya Kodu</label>
+                <input type="text" id="editKod">
+            </div>
+            <div class="form-group">
+                <label>Stok (kg)</label>
+                <input type="number" id="editStok" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Kritik Stok (kg)</label>
+                <input type="number" id="editKritikStok" step="0.01">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="saveEditPaint()">Kaydet</button>
+                <button class="btn btn-danger" onclick="deletePaint()">Sil</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const app = initializeApp({ databaseURL: "https://boyastokapp-default-rtdb.europe-west1.firebasedatabase.app/" });
+        const db = getDatabase(app);
+
+        // Acil kod - sadece sen bilirsin!
+        const ACIL_KOD = 'pergola2026reset';
+
+        window.isAdmin = false;
+        window.paints = [];
+        window.selectedPaint = null;
+        window.adminCredentials = null;
+
+        const initialData = [{"id":1,"marka":"PULVER","kod":"09418.01013","ad":"RAL 1013 Tex","stok":35.0,"kritikStok":50.0},{"id":2,"marka":"PULVER","kod":"09418.01015","ad":"RAL 1015 Tex","stok":25.0,"kritikStok":50.0},{"id":3,"marka":"PULVER","kod":"09418.09001","ad":"RAL 9001 Tex","stok":80.0,"kritikStok":50.0},{"id":4,"marka":"PULVER","kod":"09418.09003","ad":"RAL 9003 Tex","stok":50.0,"kritikStok":50.0},{"id":5,"marka":"PULVER","kod":"09418.09005","ad":"RAL 9005 Tex","stok":130.0,"kritikStok":50.0},{"id":6,"marka":"PULVER","kod":"09610.09006","ad":"RAL 9006 Tex","stok":45.0,"kritikStok":50.0},{"id":7,"marka":"PULVER","kod":"09618.09007","ad":"RAL 9007 Tex","stok":43.0,"kritikStok":50.0},{"id":8,"marka":"PULVER","kod":"09610.09010","ad":"RAL 9010 Tex","stok":15.0,"kritikStok":50.0},{"id":9,"marka":"PULVER","kod":"09610.09011","ad":"RAL 9011 Tex","stok":50.0,"kritikStok":50.0},{"id":10,"marka":"PULVER","kod":"09418.09016","ad":"RAL 9016 Tex","stok":95.0,"kritikStok":50.0},{"id":11,"marka":"PULVER","kod":"09418.07016","ad":"RAL 7016 Tex","stok":333.0,"kritikStok":50.0},{"id":12,"marka":"PULVER","kod":"09418.07012","ad":"RAL 7012 Tex","stok":11.0,"kritikStok":50.0},{"id":13,"marka":"PULVER","kod":"09418.07021","ad":"RAL 7021 Tex","stok":10.0,"kritikStok":50.0},{"id":14,"marka":"PULVER","kod":"09418.07022","ad":"RAL 7022 Tex","stok":12.0,"kritikStok":50.0},{"id":15,"marka":"PULVER","kod":"09418.07024","ad":"RAL 7024 Tex","stok":11.0,"kritikStok":50.0},{"id":16,"marka":"PULVER","kod":"09418.07030","ad":"RAL 7030 Tex","stok":18.0,"kritikStok":50.0},{"id":17,"marka":"PULVER","kod":"09418.07035","ad":"RAL 7035 Tex","stok":18.0,"kritikStok":50.0},{"id":18,"marka":"PULVER","kod":"09438.07036","ad":"RAL 7036 Tex","stok":5.0,"kritikStok":50.0},{"id":19,"marka":"PULVER","kod":"09418.07037","ad":"RAL 7037 Tex","stok":27.0,"kritikStok":50.0},{"id":20,"marka":"PULVER","kod":"09418.07040","ad":"RAL 7040 Tex","stok":3.0,"kritikStok":50.0},{"id":21,"marka":"PULVER","kod":"09418.07042","ad":"RAL 7042 Tex","stok":8.0,"kritikStok":50.0},{"id":22,"marka":"PULVER","kod":"09438.05007","ad":"RAL 5007 Tex","stok":30.0,"kritikStok":50.0},{"id":23,"marka":"PULVER","kod":"09418.05010","ad":"RAL 5010 Tex","stok":20.0,"kritikStok":50.0},{"id":24,"marka":"PULVER","kod":"09418.08014","ad":"RAL 8014 Tex","stok":15.0,"kritikStok":50.0},{"id":25,"marka":"PULVER","kod":"09418.06005","ad":"RAL 6005 Tex","stok":18.0,"kritikStok":50.0},{"id":26,"marka":"PULVER","kod":"09418.03002","ad":"RAL 3002 Tex","stok":0.0,"kritikStok":50.0},{"id":27,"marka":"PULVER","kod":"09438.08017","ad":"RAL 8017 Tex","stok":30.0,"kritikStok":50.0},{"id":28,"marka":"PULVER","kod":"09418.08004","ad":"RAL 8004","stok":35.0,"kritikStok":50.0},{"id":29,"marka":"PULVER","kod":"09620.PS937","ad":"BONS 937 SPP","stok":10.0,"kritikStok":50.0},{"id":30,"marka":"PULVER","kod":"08638.MS761","ad":"BONS 761 PP","stok":0.0,"kritikStok":50.0},{"id":31,"marka":"PULVER","kod":"11610.06005","ad":"RAL 6005 Matt","stok":0.0,"kritikStok":50.0},{"id":32,"marka":"PULVER","kod":"11610.07016","ad":"RAL 7016 Matt","stok":10.0,"kritikStok":50.0},{"id":33,"marka":"PULVER","kod":"11618.07024","ad":"RAL 7024 Matt","stok":5.0,"kritikStok":50.0},{"id":34,"marka":"PULVER","kod":"11610.08017","ad":"RAL 8017 Matt","stok":10.0,"kritikStok":50.0},{"id":35,"marka":"PULVER","kod":"11610.09005","ad":"RAL 9005 Matt","stok":10.0,"kritikStok":50.0},{"id":36,"marka":"PULVER","kod":"11610.09006","ad":"RAL 9006 Matt","stok":0.0,"kritikStok":50.0},{"id":37,"marka":"PULVER","kod":"11610.09016","ad":"RAL 9016 Matt","stok":0.0,"kritikStok":50.0},{"id":38,"marka":"PULVER","kod":"12660.07024","ad":"RAL 7024 Parlak","stok":0.0,"kritikStok":50.0},{"id":39,"marka":"PULVER","kod":"12660.09005","ad":"RAL 9005 Parlak","stok":0.0,"kritikStok":50.0},{"id":40,"marka":"TİGER","kod":"20120001","ad":"RAL 9005","stok":40.0,"kritikStok":50.0},{"id":41,"marka":"TİGER","kod":"20120007","ad":"RAL 9007","stok":0.0,"kritikStok":50.0},{"id":42,"marka":"TİGER","kod":"20120003","ad":"RAL 9003","stok":22.0,"kritikStok":50.0},{"id":43,"marka":"TİGER","kod":"20120016","ad":"RAL 9016","stok":0.0,"kritikStok":50.0},{"id":44,"marka":"TİGER","kod":"20127001","ad":"RAL 7001","stok":15.0,"kritikStok":50.0},{"id":45,"marka":"TİGER","kod":"20127016","ad":"RAL 7016","stok":70.0,"kritikStok":50.0},{"id":46,"marka":"TİGER","kod":"20127035","ad":"RAL 7035","stok":15.0,"kritikStok":50.0},{"id":47,"marka":"TİGER","kod":"20127040","ad":"RAL 7040","stok":15.0,"kritikStok":50.0},{"id":48,"marka":"TİGER","kod":"20128014","ad":"RAL 8014","stok":0.0,"kritikStok":50.0},{"id":49,"marka":"TİGER","kod":"20121015","ad":"RAL 1015","stok":0.0,"kritikStok":50.0},{"id":50,"marka":"TİGER","kod":"20126005","ad":"RAL 6005","stok":0.0,"kritikStok":50.0},{"id":51,"marka":"TİGER","kod":"202M7016","ad":"RAL 7016 Matt","stok":0.0,"kritikStok":50.0},{"id":52,"marka":"TİGER","kod":"202M9005","ad":"RAL 9005 Matt","stok":0.0,"kritikStok":50.0},{"id":53,"marka":"AKZONOBEL","kod":"SA3165","ad":"RAL 9005","stok":61.0,"kritikStok":50.0},{"id":54,"marka":"AKZONOBEL","kod":"SA3161","ad":"RAL 9010","stok":0.0,"kritikStok":50.0},{"id":55,"marka":"AKZONOBEL","kod":"SA3162","ad":"RAL 9006","stok":35.0,"kritikStok":50.0},{"id":56,"marka":"AKZONOBEL","kod":"SA3164","ad":"RAL 9016 Tex","stok":60.0,"kritikStok":50.0},{"id":57,"marka":"AKZONOBEL","kod":"SA3170","ad":"RAL 7040","stok":0.0,"kritikStok":50.0},{"id":58,"marka":"İBA KİMYA","kod":"PE58AT9010180SP","ad":"RAL 9010","stok":0.0,"kritikStok":50.0},{"id":59,"marka":"İBA KİMYA","kod":"PE58AT9006180SP","ad":"RAL 9006","stok":0.0,"kritikStok":50.0},{"id":60,"marka":"İBA KİMYA","kod":"PE58AT9005180SP","ad":"RAL 9005","stok":0.0,"kritikStok":50.0},{"id":61,"marka":"İBA KİMYA","kod":"PE58AT9016180SP","ad":"RAL 9016","stok":0.0,"kritikStok":50.0},{"id":62,"marka":"İBA KİMYA","kod":"PE58AT7035180SP","ad":"RAL 7035","stok":0.0,"kritikStok":50.0},{"id":63,"marka":"İBA KİMYA","kod":"PE58AT7016180SP","ad":"RAL 7016","stok":5.0,"kritikStok":50.0},{"id":64,"marka":"İBA KİMYA","kod":"PE58AT7024180SP","ad":"RAL 7024","stok":20.0,"kritikStok":50.0},{"id":65,"marka":"İBA KİMYA","kod":"PE58AT6005180SP","ad":"RAL 6005","stok":25.0,"kritikStok":50.0},{"id":66,"marka":"İBA KİMYA","kod":"PE58AT5002180SPX","ad":"RAL 5002 Tex","stok":25.0,"kritikStok":50.0},{"id":67,"marka":"İBA KİMYA","kod":"PE58AT8001180M","ad":"RAL 8001 Matt","stok":26.0,"kritikStok":50.0},{"id":68,"marka":"İBA KİMYA","kod":"PE58AT9005180M","ad":"RAL 9005 Matt","stok":0.0,"kritikStok":50.0},{"id":69,"marka":"İBA KİMYA","kod":"PE58AT9006180M","ad":"RAL 9006 Matt","stok":0.0,"kritikStok":50.0},{"id":70,"marka":"İBA KİMYA","kod":"PE58AT7024180M","ad":"RAL 7024 Matt","stok":0.0,"kritikStok":50.0},{"id":71,"marka":"İBA KİMYA","kod":"PE58AT8017180M","ad":"RAL 8017 Matt","stok":0.0,"kritikStok":50.0},{"id":72,"marka":"JOTUN","kod":"JOT-2481-9010","ad":"RAL 9010","stok":0.0,"kritikStok":50.0},{"id":73,"marka":"JOTUN","kod":"JOT-2481-9005","ad":"RAL 9005","stok":10.0,"kritikStok":50.0},{"id":74,"marka":"JOTUN","kod":"JOT-2481-9016","ad":"RAL 9016","stok":0.0,"kritikStok":50.0},{"id":75,"marka":"JOTUN","kod":"JOT-2481-7016","ad":"RAL 7016","stok":9.0,"kritikStok":50.0},{"id":76,"marka":"JOTUN","kod":"JOT-2481-7035","ad":"RAL 7035","stok":5.0,"kritikStok":50.0},{"id":77,"marka":"JOTUN","kod":"JOT-2481-9007","ad":"RAL 9007","stok":15.0,"kritikStok":50.0},{"id":78,"marka":"JOTUN","kod":"JOT-2481-9001","ad":"RAL 9001 Matt","stok":15.0,"kritikStok":50.0},{"id":79,"marka":"JOTUN","kod":"JOT-2481-9005M","ad":"RAL 9005 Matt","stok":5.0,"kritikStok":50.0},{"id":80,"marka":"JOTUN","kod":"JOT-2481-9006M","ad":"RAL 9006 Matt","stok":8.0,"kritikStok":50.0},{"id":81,"marka":"JOTUN","kod":"JOT-2481-7024M","ad":"RAL 7024 Matt","stok":8.0,"kritikStok":50.0}];
+
+        // ===================== BAŞLANGIÇ =====================
+        async function checkFirstTime() {
+            try {
+                const snapshot = await get(ref(db, 'admin'));
+                if (snapshot.exists()) {
+                    window.adminCredentials = snapshot.val();
+                    document.getElementById('loginScreen').classList.remove('hidden');
+                } else {
+                    document.getElementById('registerScreen').classList.remove('hidden');
+                }
+            } catch (e) {
+                document.getElementById('loginScreen').classList.remove('hidden');
+            }
+        }
+
+        // ===================== GİRİŞ =====================
+        window.showAdminLogin = function() {
+            hideAllForms();
+            document.getElementById('adminLoginForm').classList.remove('hidden');
+        };
+        window.showGuestLogin = function() {
+            hideAllForms();
+            document.getElementById('guestLoginForm').classList.remove('hidden');
+        };
+        window.showResetConfirm = function() {
+            hideAllForms();
+            document.getElementById('resetConfirmForm').classList.remove('hidden');
+        };
+        window.hideResetConfirm = function() {
+            document.getElementById('resetConfirmForm').classList.add('hidden');
+            document.getElementById('resetEmergencyCode').value = '';
+        };
+        function hideAllForms() {
+            ['adminLoginForm','guestLoginForm','forgotPasswordForm','resetConfirmForm'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+        }
+
+        window.loginAdmin = function() {
+            const u = document.getElementById('adminUsername').value.trim();
+            const p = document.getElementById('adminPassword').value;
+            if (!window.adminCredentials) { alert('❌ Sayfayı yenileyin!'); return; }
+            if (u === window.adminCredentials.username && p === window.adminCredentials.password) {
+                window.isAdmin = true;
+                showApp(`Yönetici (${u})`);
+            } else { alert('❌ Kullanıcı adı veya şifre yanlış!'); }
+        };
+
+        window.loginGuest = function() {
+            const code = document.getElementById('guestCode').value.trim();
+            if (code === 'pergola') { window.isAdmin = false; showApp('Misafir'); }
+            else { alert('❌ Yanlış kod!'); }
+        };
+
+        // ===================== ŞİFREMİ UNUTTUM =====================
+        window.showForgotPassword = function() {
+            hideAllForms();
+            document.getElementById('forgotPasswordForm').classList.remove('hidden');
+            document.getElementById('newPasswordFields').classList.add('hidden');
+            document.getElementById('emergencyCheckBtn').classList.remove('hidden');
+        };
+        window.hideForgotPassword = function() {
+            document.getElementById('forgotPasswordForm').classList.add('hidden');
+            document.getElementById('adminLoginForm').classList.remove('hidden');
+            document.getElementById('emergencyCode').value = '';
+            document.getElementById('newPasswordFields').classList.add('hidden');
+            document.getElementById('emergencyCheckBtn').classList.remove('hidden');
+        };
+
+        window.checkEmergencyCode = function() {
+            const code = document.getElementById('emergencyCode').value.trim();
+            if (code === ACIL_KOD) {
+                document.getElementById('emergencyCheckBtn').classList.add('hidden');
+                document.getElementById('newPasswordFields').classList.remove('hidden');
+                // Mevcut kullanıcı adını doldur
+                if (window.adminCredentials) {
+                    document.getElementById('newUsernameField').value = window.adminCredentials.username;
+                }
+                alert('✅ Acil kod doğru! Yeni bilgilerinizi girin.');
+            } else {
+                alert('❌ Acil kod yanlış!');
+            }
+        };
+
+        window.setNewPassword = async function() {
+            const newUsername = document.getElementById('newUsernameField').value.trim();
+            const newPassword = document.getElementById('newPasswordField').value;
+            const confirmPassword = document.getElementById('newPasswordConfirmField').value;
+
+            if (!newUsername || !newPassword) { alert('❌ Tüm alanları doldurun!'); return; }
+            if (newPassword !== confirmPassword) { alert('❌ Şifreler eşleşmiyor!'); return; }
+            if (newPassword.length < 4) { alert('❌ Şifre en az 4 karakter!'); return; }
+
+            try {
+                const newAdmin = { username: newUsername, password: newPassword };
+                await set(ref(db, 'admin'), newAdmin);
+                // NOT: Boya verileri dokunulmadı!
+                window.adminCredentials = newAdmin;
+                alert('✅ Şifre güncellendi! Yeni bilgilerinizle giriş yapabilirsiniz.');
+                window.hideForgotPassword();
+            } catch (e) { alert('❌ Güncelleme hatası!'); }
+        };
+
+        // ===================== SİSTEM SIFIRLAMA (sadece admin kaydı) =====================
+        window.resetAdminOnly = async function() {
+            const code = document.getElementById('resetEmergencyCode').value.trim();
+            if (code !== ACIL_KOD) { alert('❌ Yanlış acil kod!'); return; }
+            if (!confirm('⚠️ Yönetici kaydı silinecek. Boya verileri korunacak. Emin misiniz?')) return;
+            try {
+                await remove(ref(db, 'admin'));
+                window.adminCredentials = null;
+                alert('✅ Yönetici kaydı silindi! Yeni kayıt yapabilirsiniz.');
+                window.location.reload();
+            } catch (e) { alert('❌ Sıfırlama hatası!'); }
+        };
+
+        // ===================== KAYIT =====================
+        window.registerAdmin = async function() {
+            const u = document.getElementById('registerUsername').value.trim();
+            const p = document.getElementById('registerPassword').value;
+            const pc = document.getElementById('registerPasswordConfirm').value;
+            if (!u || !p) { alert('❌ Tüm alanları doldurun!'); return; }
+            if (p !== pc) { alert('❌ Şifreler eşleşmiyor!'); return; }
+            if (p.length < 4) { alert('❌ Şifre en az 4 karakter!'); return; }
+            try {
+                const adminData = { username: u, password: p };
+                await set(ref(db, 'admin'), adminData);
+                // Boya verisi yoksa ilk veriyi yükle
+                const paintsSnap = await get(ref(db, 'paints'));
+                if (!paintsSnap.exists()) {
+                    await set(ref(db, 'paints'), initialData);
+                }
+                window.adminCredentials = adminData;
+                alert('✅ Kayıt başarılı!');
+                document.getElementById('registerScreen').classList.add('hidden');
+                document.getElementById('loginScreen').classList.remove('hidden');
+            } catch (e) { alert('❌ Kayıt hatası!'); }
+        };
+
+        // ===================== UYGULAMA =====================
+        function showApp(userType) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('appScreen').classList.remove('hidden');
+            document.getElementById('userInfo').textContent = `👤 ${userType}`;
+            if (window.isAdmin) document.getElementById('addPaintSection').classList.remove('hidden');
+            loadData();
+        }
+
+        window.logout = function() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('appScreen').classList.add('hidden');
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('guestCode').value = '';
+            hideAllForms();
+            window.isAdmin = false;
+        };
+
+        async function loadData() {
+            try {
+                const snap = await get(ref(db, 'paints'));
+                window.paints = snap.exists() ? snap.val() : initialData;
+                renderPaints();
+            } catch (e) { window.paints = initialData; renderPaints(); }
+        }
+
+        function renderPaints() {
+            const container = document.getElementById('paintList');
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const hasSearch = searchTerm.length > 0;
+
+            const clearBtn = document.getElementById('searchClearBtn');
+            hasSearch ? clearBtn.classList.add('visible') : clearBtn.classList.remove('visible');
+
+            const grouped = {};
+            window.paints.forEach(p => {
+                if (!grouped[p.marka]) grouped[p.marka] = [];
+                grouped[p.marka].push(p);
+            });
+
+            let html = '';
+            Object.keys(grouped).sort().forEach(marka => {
+                let paintsHtml = '';
+                let hasVisible = false;
+
+                grouped[marka].forEach(paint => {
+                    const matches = !hasSearch ||
+                        paint.ad.toLowerCase().includes(searchTerm) ||
+                        paint.kod.toLowerCase().includes(searchTerm) ||
+                        marka.toLowerCase().includes(searchTerm);
+                    if (!matches) return;
+                    hasVisible = true;
+
+                    const isCritical = paint.stok < paint.kritikStok;
+                    const clickable = window.isAdmin ? 'clickable' : '';
+                    const onclick = window.isAdmin ? `onclick="openPaintModal(${paint.id})"` : '';
+
+                    paintsHtml += `
+                        <div class="paint-item ${isCritical ? 'critical' : ''} ${clickable}" ${onclick}>
+                            <div class="paint-info">
+                                <div class="paint-name ${isCritical ? 'critical-text' : ''}">${paint.ad}</div>
+                                <div class="paint-code">${paint.kod}</div>
+                            </div>
+                            <div class="paint-stock ${isCritical ? 'critical' : ''}">${paint.stok.toFixed(1)} kg</div>
+                            ${window.isAdmin ? `<div class="paint-actions">
+                                <button class="btn btn-warning" onclick="event.stopPropagation(); openEditModal(${paint.id})">Düzenle</button>
+                            </div>` : ''}
+                        </div>`;
+                });
+
+                if (hasVisible) {
+                    const isOpen = hasSearch ? 'open' : '';
+                    const isActive = hasSearch ? 'active' : '';
+                    const isRotated = hasSearch ? 'rotated' : '';
+                    html += `
+                        <div class="accordion">
+                            <div class="accordion-header ${isActive}" onclick="toggleAccordion(this)">
+                                <div class="accordion-title">${marka}</div>
+                                <div class="accordion-arrow ${isRotated}">▼</div>
+                            </div>
+                            <div class="accordion-content ${isOpen}">
+                                <div class="paint-list">${paintsHtml}</div>
+                            </div>
+                        </div>`;
+                }
+            });
+
+            container.innerHTML = html || '<p style="text-align:center;padding:20px;color:#718096;">Sonuç bulunamadı</p>';
+        }
+
+        window.clearSearch = function() {
+            document.getElementById('searchBox').value = '';
+            renderPaints();
+        };
+        window.filterPaints = function() { renderPaints(); };
+
+        window.toggleAccordion = function(el) {
+            const content = el.nextElementSibling;
+            const arrow = el.querySelector('.accordion-arrow');
+            const isOpen = content.classList.contains('open');
+            content.classList.toggle('open', !isOpen);
+            arrow.classList.toggle('rotated', !isOpen);
+            el.classList.toggle('active', !isOpen);
+        };
+
+        window.openPaintModal = function(paintId) {
+            if (!window.isAdmin) return;
+            const paint = window.paints.find(p => p.id === paintId);
+            window.selectedPaint = paint;
+            document.getElementById('modalTitle').textContent = paint.ad;
+            document.getElementById('movementAmount').value = '';
+            document.getElementById('criticalStock').value = paint.kritikStok;
+            document.getElementById('movementModal').classList.add('show');
+        };
+        window.closeModal = function() { document.getElementById('movementModal').classList.remove('show'); };
+
+        window.addStock = async function() {
+            const amount = parseFloat(document.getElementById('movementAmount').value);
+            const cs = parseFloat(document.getElementById('criticalStock').value);
+            if (!amount || amount <= 0) { alert('❌ Geçerli miktar girin!'); return; }
+            window.selectedPaint.stok += amount;
+            window.selectedPaint.kritikStok = cs;
+            await updatePaint(window.selectedPaint);
+            closeModal();
+            renderPaints();
+        };
+
+        window.removeStock = async function() {
+            const amount = parseFloat(document.getElementById('movementAmount').value);
+            const cs = parseFloat(document.getElementById('criticalStock').value);
+            if (!amount || amount <= 0) { alert('❌ Geçerli miktar girin!'); return; }
+            if (window.selectedPaint.stok < amount) { alert('⚠️ Yeterli stok yok!'); return; }
+            window.selectedPaint.stok -= amount;
+            window.selectedPaint.kritikStok = cs;
+            await updatePaint(window.selectedPaint);
+            closeModal();
+            renderPaints();
+        };
+
+        window.openEditModal = function(paintId) {
+            const paint = window.paints.find(p => p.id === paintId);
+            window.selectedPaint = paint;
+            document.getElementById('editMarka').value = paint.marka;
+            document.getElementById('editAd').value = paint.ad;
+            document.getElementById('editKod').value = paint.kod;
+            document.getElementById('editStok').value = paint.stok;
+            document.getElementById('editKritikStok').value = paint.kritikStok;
+            document.getElementById('editModal').classList.add('show');
+        };
+        window.closeEditModal = function() { document.getElementById('editModal').classList.remove('show'); };
+
+        window.saveEditPaint = async function() {
+            window.selectedPaint.marka = document.getElementById('editMarka').value.toUpperCase();
+            window.selectedPaint.ad = document.getElementById('editAd').value;
+            window.selectedPaint.kod = document.getElementById('editKod').value;
+            window.selectedPaint.stok = parseFloat(document.getElementById('editStok').value) || 0;
+            window.selectedPaint.kritikStok = parseFloat(document.getElementById('editKritikStok').value) || 50;
+            await updatePaint(window.selectedPaint);
+            closeEditModal();
+            renderPaints();
+        };
+
+        window.deletePaint = async function() {
+            if (!confirm('Bu boyayı silmek istediğinize emin misiniz?')) return;
+            const idx = window.paints.findIndex(p => p.id === window.selectedPaint.id);
+            window.paints.splice(idx, 1);
+            await set(ref(db, 'paints'), window.paints);
+            closeEditModal();
+            renderPaints();
+        };
+
+        async function updatePaint(paint) {
+            const idx = window.paints.findIndex(p => p.id === paint.id);
+            window.paints[idx] = paint;
+            await set(ref(db, `paints/${idx}`), paint);
+        }
+
+        window.addNewPaint = async function() {
+            const np = {
+                id: window.paints.length + 1,
+                marka: document.getElementById('newMarka').value.toUpperCase(),
+                ad: document.getElementById('newAd').value,
+                kod: document.getElementById('newKod').value,
+                stok: parseFloat(document.getElementById('newStok').value) || 0,
+                kritikStok: parseFloat(document.getElementById('newKritikStok').value) || 50
+            };
+            if (!np.marka || !np.ad) { alert('❌ Marka ve boya adı zorunlu!'); return; }
+            window.paints.push(np);
+            await set(ref(db, 'paints'), window.paints);
+            document.getElementById('newMarka').value = '';
+            document.getElementById('newAd').value = '';
+            document.getElementById('newKod').value = '';
+            document.getElementById('newStok').value = '0';
+            document.getElementById('newKritikStok').value = '50';
+            renderPaints();
+            alert('✅ Yeni boya eklendi!');
+        };
+
+        window.saveAllData = async function() {
+            try {
+                await set(ref(db, 'paints'), window.paints);
+                alert('✅ Tüm veriler kaydedildi!');
+            } catch (e) { alert('❌ Kaydetme hatası!'); }
+        };
+
+        checkFirstTime();
+    </script>
+</body>
+</html>
