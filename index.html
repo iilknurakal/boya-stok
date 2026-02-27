@@ -142,12 +142,18 @@
         .modal-header h2 { color: #333; font-size: 22px; }
 
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #4a5568; font-size: 14px; }
+        .form-group label { 
+            display: block; margin-bottom: 5px; 
+            font-weight: 600; color: #4a5568; font-size: 14px; 
+        }
         .form-group input, .form-group select {
             width: 100%; padding: 10px;
             border: 2px solid #e2e8f0; border-radius: 6px; font-size: 15px;
+            background: white;
         }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: #667eea; }
+        .form-group input:focus, .form-group select:focus { 
+            outline: none; border-color: #667eea; 
+        }
 
         .button-group { display: flex; gap: 10px; margin-top: 20px; }
         .button-group .btn { flex: 1; }
@@ -161,7 +167,6 @@
         .hidden { display: none; }
         .info-text { text-align: center; color: #718096; font-size: 14px; margin-top: 10px; }
         .warning-text { text-align: center; color: #ed8936; font-size: 13px; margin-top: 10px; font-weight: 600; }
-        .success-text { text-align: center; color: #48bb78; font-size: 13px; margin-top: 10px; font-weight: 600; }
 
         @media (max-width: 768px) {
             .header { flex-direction: column; align-items: stretch; }
@@ -183,8 +188,8 @@
 
         <!-- Yönetici Giriş -->
         <div id="adminLoginForm" class="hidden" style="margin-top:20px;">
-            <input type="text" id="adminUsername" class="code-input" placeholder="Kullanıcı Adı">
-            <input type="password" id="adminPassword" class="code-input" placeholder="Şifre">
+            <input type="text" id="adminUsername" class="code-input" placeholder="Kullanıcı Adı" autocomplete="username">
+            <input type="password" id="adminPassword" class="code-input" placeholder="Şifre" autocomplete="current-password">
             <button class="login-btn admin-btn" onclick="loginAdmin()">Giriş Yap</button>
             <div style="text-align:center; margin-top:10px;">
                 <button class="forgot-btn" onclick="showForgotPassword()">🔑 Şifremi Unuttum</button>
@@ -193,18 +198,18 @@
 
         <!-- Misafir Giriş -->
         <div id="guestLoginForm" class="hidden" style="margin-top:20px;">
-            <input type="text" id="guestCode" class="code-input" placeholder="Misafir Kodu">
+            <input type="text" id="guestCode" class="code-input" placeholder="Misafir Kodu" autocomplete="off">
             <button class="login-btn guest-btn" onclick="loginGuest()">Giriş Yap</button>
         </div>
 
-        <!-- Şifre Sıfırla (Şifremi Unuttum) -->
+        <!-- Şifre Sıfırla -->
         <div id="forgotPasswordForm" class="hidden" style="margin-top:20px;">
             <p class="info-text">Acil kodu girin, ardından yeni şifre belirleyin.</p>
-            <input type="password" id="emergencyCode" class="code-input" placeholder="Acil Kod">
+            <input type="password" id="emergencyCode" class="code-input" placeholder="Acil Kod" autocomplete="off">
             <div id="newPasswordFields" class="hidden">
-                <input type="text" id="newUsernameField" class="code-input" placeholder="Yeni Kullanıcı Adı">
-                <input type="password" id="newPasswordField" class="code-input" placeholder="Yeni Şifre">
-                <input type="password" id="newPasswordConfirmField" class="code-input" placeholder="Yeni Şifre (Tekrar)">
+                <input type="text" id="newUsernameField" class="code-input" placeholder="Yeni Kullanıcı Adı" autocomplete="off">
+                <input type="password" id="newPasswordField" class="code-input" placeholder="Yeni Şifre" autocomplete="new-password">
+                <input type="password" id="newPasswordConfirmField" class="code-input" placeholder="Yeni Şifre (Tekrar)" autocomplete="new-password">
                 <button class="login-btn admin-btn" onclick="setNewPassword()">Şifreyi Güncelle</button>
             </div>
             <div id="emergencyCheckBtn" style="margin-top:8px;">
@@ -213,10 +218,10 @@
             <button class="login-btn" onclick="hideForgotPassword()" style="background:#cbd5e0; margin-top:8px;">Geri Dön</button>
         </div>
 
-        <!-- Sistem Sıfırla (Yönetici kaydını sil - veriler kalır) -->
+        <!-- Sistem Sıfırla -->
         <div id="resetConfirmForm" class="hidden" style="margin-top:20px;">
             <p class="warning-text">⚠️ Sadece yönetici kaydı silinir, boya verileri KORUNUR!</p>
-            <input type="password" id="resetEmergencyCode" class="code-input" placeholder="Acil Kod">
+            <input type="password" id="resetEmergencyCode" class="code-input" placeholder="Acil Kod" autocomplete="off">
             <button class="login-btn reset-btn" onclick="resetAdminOnly()">Yönetici Kaydını Sıfırla</button>
             <button class="login-btn" onclick="hideResetConfirm()" style="background:#cbd5e0; margin-top:8px;">İptal</button>
         </div>
@@ -227,9 +232,9 @@
         <h1>🔐 Yönetici Kaydı</h1>
         <p class="info-text">Lütfen yönetici bilgilerini belirleyin.</p>
         <div style="margin-top:20px;">
-            <input type="text" id="registerUsername" class="code-input" placeholder="Kullanıcı Adı">
-            <input type="password" id="registerPassword" class="code-input" placeholder="Şifre">
-            <input type="password" id="registerPasswordConfirm" class="code-input" placeholder="Şifre (Tekrar)">
+            <input type="text" id="registerUsername" class="code-input" placeholder="Kullanıcı Adı" autocomplete="username">
+            <input type="password" id="registerPassword" class="code-input" placeholder="Şifre" autocomplete="new-password">
+            <input type="password" id="registerPasswordConfirm" class="code-input" placeholder="Şifre (Tekrar)" autocomplete="new-password">
             <button class="login-btn admin-btn" onclick="registerAdmin()">Kaydet ve Devam Et</button>
         </div>
     </div>
@@ -245,7 +250,7 @@
         </div>
 
         <div class="search-wrapper">
-            <input type="text" id="searchBox" class="search-box" placeholder="🔍 Boya ara..." oninput="filterPaints()">
+            <input type="text" id="searchBox" class="search-box" placeholder="🔍 Boya ara..." oninput="filterPaints()" autocomplete="off">
             <button class="search-clear" id="searchClearBtn" onclick="clearSearch()">✕</button>
         </div>
 
@@ -255,23 +260,23 @@
             <h3>➕ Yeni Boya Ekle</h3>
             <div class="form-group">
                 <label>Marka</label>
-                <input type="text" id="newMarka" placeholder="Ör: PULVER">
+                <input type="text" id="newMarka" placeholder="Ör: PULVER" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>Boya Adı</label>
-                <input type="text" id="newAd" placeholder="Ör: RAL 9006 Tex">
+                <input type="text" id="newAd" placeholder="Ör: RAL 9006 Tex" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>Boya Kodu</label>
-                <input type="text" id="newKod" placeholder="Ör: 09610.09006">
+                <input type="text" id="newKod" placeholder="Ör: 09610.09006" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>Başlangıç Stok (kg)</label>
-                <input type="number" id="newStok" placeholder="0" value="0">
+                <input type="number" id="newStok" placeholder="0" value="0" step="0.01" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>Kritik Stok (kg)</label>
-                <input type="number" id="newKritikStok" placeholder="50" value="50">
+                <input type="number" id="newKritikStok" placeholder="50" value="50" step="0.01" autocomplete="off">
             </div>
             <div class="button-group">
                 <button class="btn btn-success" onclick="addNewPaint()">Boya Ekle</button>
@@ -289,11 +294,11 @@
             </div>
             <div class="form-group">
                 <label>Miktar (kg)</label>
-                <input type="number" id="movementAmount" placeholder="0" step="0.01">
+                <input type="number" id="movementAmount" placeholder="0" step="0.01" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>Kritik Stok (kg)</label>
-                <input type="number" id="criticalStock" placeholder="50" step="0.01">
+                <input type="number" id="criticalStock" placeholder="50" step="0.01" autocomplete="off">
             </div>
             <div class="button-group">
                 <button class="btn btn-success" onclick="addStock()">Stok Ekle</button>
@@ -311,23 +316,23 @@
             </div>
             <div class="form-group">
                 <label>Marka</label>
-                <input type="text" id="editMarka">
+                <input type="text" id="editMarka" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>Boya Adı</label>
-                <input type="text" id="editAd">
+                <input type="text" id="editAd" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>Boya Kodu</label>
-                <input type="text" id="editKod">
+                <input type="text" id="editKod" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>Stok (kg)</label>
-                <input type="number" id="editStok" step="0.01">
+                <input type="number" id="editStok" step="0.01" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>Kritik Stok (kg)</label>
-                <input type="number" id="editKritikStok" step="0.01">
+                <input type="number" id="editKritikStok" step="0.01" autocomplete="off">
             </div>
             <div class="button-group">
                 <button class="btn btn-primary" onclick="saveEditPaint()">Kaydet</button>
@@ -343,7 +348,6 @@
         const app = initializeApp({ databaseURL: "https://boyastokapp-default-rtdb.europe-west1.firebasedatabase.app/" });
         const db = getDatabase(app);
 
-        // Acil kod - sadece sen bilirsin!
         const ACIL_KOD = 'pergola2026reset';
 
         window.isAdmin = false;
@@ -353,7 +357,6 @@
 
         const initialData = [{"id":1,"marka":"PULVER","kod":"09418.01013","ad":"RAL 1013 Tex","stok":35.0,"kritikStok":50.0},{"id":2,"marka":"PULVER","kod":"09418.01015","ad":"RAL 1015 Tex","stok":25.0,"kritikStok":50.0},{"id":3,"marka":"PULVER","kod":"09418.09001","ad":"RAL 9001 Tex","stok":80.0,"kritikStok":50.0},{"id":4,"marka":"PULVER","kod":"09418.09003","ad":"RAL 9003 Tex","stok":50.0,"kritikStok":50.0},{"id":5,"marka":"PULVER","kod":"09418.09005","ad":"RAL 9005 Tex","stok":130.0,"kritikStok":50.0},{"id":6,"marka":"PULVER","kod":"09610.09006","ad":"RAL 9006 Tex","stok":45.0,"kritikStok":50.0},{"id":7,"marka":"PULVER","kod":"09618.09007","ad":"RAL 9007 Tex","stok":43.0,"kritikStok":50.0},{"id":8,"marka":"PULVER","kod":"09610.09010","ad":"RAL 9010 Tex","stok":15.0,"kritikStok":50.0},{"id":9,"marka":"PULVER","kod":"09610.09011","ad":"RAL 9011 Tex","stok":50.0,"kritikStok":50.0},{"id":10,"marka":"PULVER","kod":"09418.09016","ad":"RAL 9016 Tex","stok":95.0,"kritikStok":50.0},{"id":11,"marka":"PULVER","kod":"09418.07016","ad":"RAL 7016 Tex","stok":333.0,"kritikStok":50.0},{"id":12,"marka":"PULVER","kod":"09418.07012","ad":"RAL 7012 Tex","stok":11.0,"kritikStok":50.0},{"id":13,"marka":"PULVER","kod":"09418.07021","ad":"RAL 7021 Tex","stok":10.0,"kritikStok":50.0},{"id":14,"marka":"PULVER","kod":"09418.07022","ad":"RAL 7022 Tex","stok":12.0,"kritikStok":50.0},{"id":15,"marka":"PULVER","kod":"09418.07024","ad":"RAL 7024 Tex","stok":11.0,"kritikStok":50.0},{"id":16,"marka":"PULVER","kod":"09418.07030","ad":"RAL 7030 Tex","stok":18.0,"kritikStok":50.0},{"id":17,"marka":"PULVER","kod":"09418.07035","ad":"RAL 7035 Tex","stok":18.0,"kritikStok":50.0},{"id":18,"marka":"PULVER","kod":"09438.07036","ad":"RAL 7036 Tex","stok":5.0,"kritikStok":50.0},{"id":19,"marka":"PULVER","kod":"09418.07037","ad":"RAL 7037 Tex","stok":27.0,"kritikStok":50.0},{"id":20,"marka":"PULVER","kod":"09418.07040","ad":"RAL 7040 Tex","stok":3.0,"kritikStok":50.0},{"id":21,"marka":"PULVER","kod":"09418.07042","ad":"RAL 7042 Tex","stok":8.0,"kritikStok":50.0},{"id":22,"marka":"PULVER","kod":"09438.05007","ad":"RAL 5007 Tex","stok":30.0,"kritikStok":50.0},{"id":23,"marka":"PULVER","kod":"09418.05010","ad":"RAL 5010 Tex","stok":20.0,"kritikStok":50.0},{"id":24,"marka":"PULVER","kod":"09418.08014","ad":"RAL 8014 Tex","stok":15.0,"kritikStok":50.0},{"id":25,"marka":"PULVER","kod":"09418.06005","ad":"RAL 6005 Tex","stok":18.0,"kritikStok":50.0},{"id":26,"marka":"PULVER","kod":"09418.03002","ad":"RAL 3002 Tex","stok":0.0,"kritikStok":50.0},{"id":27,"marka":"PULVER","kod":"09438.08017","ad":"RAL 8017 Tex","stok":30.0,"kritikStok":50.0},{"id":28,"marka":"PULVER","kod":"09418.08004","ad":"RAL 8004","stok":35.0,"kritikStok":50.0},{"id":29,"marka":"PULVER","kod":"09620.PS937","ad":"BONS 937 SPP","stok":10.0,"kritikStok":50.0},{"id":30,"marka":"PULVER","kod":"08638.MS761","ad":"BONS 761 PP","stok":0.0,"kritikStok":50.0},{"id":31,"marka":"PULVER","kod":"11610.06005","ad":"RAL 6005 Matt","stok":0.0,"kritikStok":50.0},{"id":32,"marka":"PULVER","kod":"11610.07016","ad":"RAL 7016 Matt","stok":10.0,"kritikStok":50.0},{"id":33,"marka":"PULVER","kod":"11618.07024","ad":"RAL 7024 Matt","stok":5.0,"kritikStok":50.0},{"id":34,"marka":"PULVER","kod":"11610.08017","ad":"RAL 8017 Matt","stok":10.0,"kritikStok":50.0},{"id":35,"marka":"PULVER","kod":"11610.09005","ad":"RAL 9005 Matt","stok":10.0,"kritikStok":50.0},{"id":36,"marka":"PULVER","kod":"11610.09006","ad":"RAL 9006 Matt","stok":0.0,"kritikStok":50.0},{"id":37,"marka":"PULVER","kod":"11610.09016","ad":"RAL 9016 Matt","stok":0.0,"kritikStok":50.0},{"id":38,"marka":"PULVER","kod":"12660.07024","ad":"RAL 7024 Parlak","stok":0.0,"kritikStok":50.0},{"id":39,"marka":"PULVER","kod":"12660.09005","ad":"RAL 9005 Parlak","stok":0.0,"kritikStok":50.0},{"id":40,"marka":"TİGER","kod":"20120001","ad":"RAL 9005","stok":40.0,"kritikStok":50.0},{"id":41,"marka":"TİGER","kod":"20120007","ad":"RAL 9007","stok":0.0,"kritikStok":50.0},{"id":42,"marka":"TİGER","kod":"20120003","ad":"RAL 9003","stok":22.0,"kritikStok":50.0},{"id":43,"marka":"TİGER","kod":"20120016","ad":"RAL 9016","stok":0.0,"kritikStok":50.0},{"id":44,"marka":"TİGER","kod":"20127001","ad":"RAL 7001","stok":15.0,"kritikStok":50.0},{"id":45,"marka":"TİGER","kod":"20127016","ad":"RAL 7016","stok":70.0,"kritikStok":50.0},{"id":46,"marka":"TİGER","kod":"20127035","ad":"RAL 7035","stok":15.0,"kritikStok":50.0},{"id":47,"marka":"TİGER","kod":"20127040","ad":"RAL 7040","stok":15.0,"kritikStok":50.0},{"id":48,"marka":"TİGER","kod":"20128014","ad":"RAL 8014","stok":0.0,"kritikStok":50.0},{"id":49,"marka":"TİGER","kod":"20121015","ad":"RAL 1015","stok":0.0,"kritikStok":50.0},{"id":50,"marka":"TİGER","kod":"20126005","ad":"RAL 6005","stok":0.0,"kritikStok":50.0},{"id":51,"marka":"TİGER","kod":"202M7016","ad":"RAL 7016 Matt","stok":0.0,"kritikStok":50.0},{"id":52,"marka":"TİGER","kod":"202M9005","ad":"RAL 9005 Matt","stok":0.0,"kritikStok":50.0},{"id":53,"marka":"AKZONOBEL","kod":"SA3165","ad":"RAL 9005","stok":61.0,"kritikStok":50.0},{"id":54,"marka":"AKZONOBEL","kod":"SA3161","ad":"RAL 9010","stok":0.0,"kritikStok":50.0},{"id":55,"marka":"AKZONOBEL","kod":"SA3162","ad":"RAL 9006","stok":35.0,"kritikStok":50.0},{"id":56,"marka":"AKZONOBEL","kod":"SA3164","ad":"RAL 9016 Tex","stok":60.0,"kritikStok":50.0},{"id":57,"marka":"AKZONOBEL","kod":"SA3170","ad":"RAL 7040","stok":0.0,"kritikStok":50.0},{"id":58,"marka":"İBA KİMYA","kod":"PE58AT9010180SP","ad":"RAL 9010","stok":0.0,"kritikStok":50.0},{"id":59,"marka":"İBA KİMYA","kod":"PE58AT9006180SP","ad":"RAL 9006","stok":0.0,"kritikStok":50.0},{"id":60,"marka":"İBA KİMYA","kod":"PE58AT9005180SP","ad":"RAL 9005","stok":0.0,"kritikStok":50.0},{"id":61,"marka":"İBA KİMYA","kod":"PE58AT9016180SP","ad":"RAL 9016","stok":0.0,"kritikStok":50.0},{"id":62,"marka":"İBA KİMYA","kod":"PE58AT7035180SP","ad":"RAL 7035","stok":0.0,"kritikStok":50.0},{"id":63,"marka":"İBA KİMYA","kod":"PE58AT7016180SP","ad":"RAL 7016","stok":5.0,"kritikStok":50.0},{"id":64,"marka":"İBA KİMYA","kod":"PE58AT7024180SP","ad":"RAL 7024","stok":20.0,"kritikStok":50.0},{"id":65,"marka":"İBA KİMYA","kod":"PE58AT6005180SP","ad":"RAL 6005","stok":25.0,"kritikStok":50.0},{"id":66,"marka":"İBA KİMYA","kod":"PE58AT5002180SPX","ad":"RAL 5002 Tex","stok":25.0,"kritikStok":50.0},{"id":67,"marka":"İBA KİMYA","kod":"PE58AT8001180M","ad":"RAL 8001 Matt","stok":26.0,"kritikStok":50.0},{"id":68,"marka":"İBA KİMYA","kod":"PE58AT9005180M","ad":"RAL 9005 Matt","stok":0.0,"kritikStok":50.0},{"id":69,"marka":"İBA KİMYA","kod":"PE58AT9006180M","ad":"RAL 9006 Matt","stok":0.0,"kritikStok":50.0},{"id":70,"marka":"İBA KİMYA","kod":"PE58AT7024180M","ad":"RAL 7024 Matt","stok":0.0,"kritikStok":50.0},{"id":71,"marka":"İBA KİMYA","kod":"PE58AT8017180M","ad":"RAL 8017 Matt","stok":0.0,"kritikStok":50.0},{"id":72,"marka":"JOTUN","kod":"JOT-2481-9010","ad":"RAL 9010","stok":0.0,"kritikStok":50.0},{"id":73,"marka":"JOTUN","kod":"JOT-2481-9005","ad":"RAL 9005","stok":10.0,"kritikStok":50.0},{"id":74,"marka":"JOTUN","kod":"JOT-2481-9016","ad":"RAL 9016","stok":0.0,"kritikStok":50.0},{"id":75,"marka":"JOTUN","kod":"JOT-2481-7016","ad":"RAL 7016","stok":9.0,"kritikStok":50.0},{"id":76,"marka":"JOTUN","kod":"JOT-2481-7035","ad":"RAL 7035","stok":5.0,"kritikStok":50.0},{"id":77,"marka":"JOTUN","kod":"JOT-2481-9007","ad":"RAL 9007","stok":15.0,"kritikStok":50.0},{"id":78,"marka":"JOTUN","kod":"JOT-2481-9001","ad":"RAL 9001 Matt","stok":15.0,"kritikStok":50.0},{"id":79,"marka":"JOTUN","kod":"JOT-2481-9005M","ad":"RAL 9005 Matt","stok":5.0,"kritikStok":50.0},{"id":80,"marka":"JOTUN","kod":"JOT-2481-9006M","ad":"RAL 9006 Matt","stok":8.0,"kritikStok":50.0},{"id":81,"marka":"JOTUN","kod":"JOT-2481-7024M","ad":"RAL 7024 Matt","stok":8.0,"kritikStok":50.0}];
 
-        // ===================== BAŞLANGIÇ =====================
         async function checkFirstTime() {
             try {
                 const snapshot = await get(ref(db, 'admin'));
@@ -368,7 +371,6 @@
             }
         }
 
-        // ===================== GİRİŞ =====================
         window.showAdminLogin = function() {
             hideAllForms();
             document.getElementById('adminLoginForm').classList.remove('hidden');
@@ -407,7 +409,6 @@
             else { alert('❌ Yanlış kod!'); }
         };
 
-        // ===================== ŞİFREMİ UNUTTUM =====================
         window.showForgotPassword = function() {
             hideAllForms();
             document.getElementById('forgotPasswordForm').classList.remove('hidden');
@@ -427,7 +428,6 @@
             if (code === ACIL_KOD) {
                 document.getElementById('emergencyCheckBtn').classList.add('hidden');
                 document.getElementById('newPasswordFields').classList.remove('hidden');
-                // Mevcut kullanıcı adını doldur
                 if (window.adminCredentials) {
                     document.getElementById('newUsernameField').value = window.adminCredentials.username;
                 }
@@ -449,14 +449,12 @@
             try {
                 const newAdmin = { username: newUsername, password: newPassword };
                 await set(ref(db, 'admin'), newAdmin);
-                // NOT: Boya verileri dokunulmadı!
                 window.adminCredentials = newAdmin;
                 alert('✅ Şifre güncellendi! Yeni bilgilerinizle giriş yapabilirsiniz.');
                 window.hideForgotPassword();
             } catch (e) { alert('❌ Güncelleme hatası!'); }
         };
 
-        // ===================== SİSTEM SIFIRLAMA (sadece admin kaydı) =====================
         window.resetAdminOnly = async function() {
             const code = document.getElementById('resetEmergencyCode').value.trim();
             if (code !== ACIL_KOD) { alert('❌ Yanlış acil kod!'); return; }
@@ -469,7 +467,6 @@
             } catch (e) { alert('❌ Sıfırlama hatası!'); }
         };
 
-        // ===================== KAYIT =====================
         window.registerAdmin = async function() {
             const u = document.getElementById('registerUsername').value.trim();
             const p = document.getElementById('registerPassword').value;
@@ -480,7 +477,6 @@
             try {
                 const adminData = { username: u, password: p };
                 await set(ref(db, 'admin'), adminData);
-                // Boya verisi yoksa ilk veriyi yükle
                 const paintsSnap = await get(ref(db, 'paints'));
                 if (!paintsSnap.exists()) {
                     await set(ref(db, 'paints'), initialData);
@@ -492,7 +488,6 @@
             } catch (e) { alert('❌ Kayıt hatası!'); }
         };
 
-        // ===================== UYGULAMA =====================
         function showApp(userType) {
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('appScreen').classList.remove('hidden');
