@@ -493,7 +493,12 @@
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('appScreen').classList.remove('hidden');
             document.getElementById('userInfo').textContent = `👤 ${userType}`;
-            if (window.isAdmin) document.getElementById('addPaintSection').classList.remove('hidden');
+            const addSection = document.getElementById('addPaintSection');
+if (window.isAdmin) {
+    addSection.classList.remove('hidden');
+} else {
+    addSection.classList.add('hidden');
+}
             loadData();
         }
 
