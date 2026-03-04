@@ -675,7 +675,7 @@ if (window.isAdmin) {
             const np = {
                 id: window.paints.length + 1,
                 marka: document.getElementById('newMarka').value.toUpperCase(),
-                ad: document.getElementById('newAd').value,
+                ad: document.getElementById('newIsim').value,
                 kod: document.getElementById('newKod').value,
                 stok: parseFloat(document.getElementById('newStok').value) || 0,
                 kritikStok: parseFloat(document.getElementById('newKritikStok').value) || 50
@@ -684,7 +684,7 @@ if (window.isAdmin) {
             window.paints.push(np);
             await set(ref(db, 'paints'), window.paints);
             document.getElementById('newMarka').value = '';
-            document.getElementById('newAd').value = '';
+            document.getElementById('newIsim').value = '';
             document.getElementById('newKod').value = '';
             document.getElementById('newStok').value = '0';
             document.getElementById('newKritikStok').value = '50';
