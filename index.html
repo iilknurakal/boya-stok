@@ -634,7 +634,7 @@ if (window.isAdmin) {
         };
 
         window.openEditModal = function(paintId) {
-            const paint = window.paints.find(p => p.id === paintId);
+           const paint = window.paints.find(p => p.id === paintId);
             window.selectedPaint = paint;
             document.getElementById('editMarka').value = paint.marka;
             document.getElementById('editAd').value = paint.ad;
