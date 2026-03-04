@@ -321,7 +321,7 @@
             </div>
             <div class="form-group">
                 <label>Boya Adı</label>
-                <input type="text" id="editAd" autocomplete="off">
+                <input type="text" id="editIsim" autocomplete="off">
             </div>
             <div class="form-group">
                 <label>Boya Kodu</label>
@@ -637,7 +637,7 @@ if (window.isAdmin) {
            const paint = window.paints.find(p => p.id === paintId);
             window.selectedPaint = paint;
             document.getElementById('editMarka').value = paint.marka;
-            document.getElementById('editAd').value = paint.ad;
+            document.getElementById('editIsim').value = paint.ad;
             document.getElementById('editKod').value = paint.kod;
             document.getElementById('editStok').value = paint.stok;
             document.getElementById('editKritikStok').value = paint.kritikStok;
@@ -647,7 +647,7 @@ if (window.isAdmin) {
 
         window.saveEditPaint = async function() {
             window.selectedPaint.marka = document.getElementById('editMarka').value.toUpperCase();
-            window.selectedPaint.ad = document.getElementById('editAd').value;
+            window.selectedPaint.ad = document.getElementById('editIsim').value;
             window.selectedPaint.kod = document.getElementById('editKod').value;
             window.selectedPaint.stok = parseFloat(document.getElementById('editStok').value) || 0;
             window.selectedPaint.kritikStok = parseFloat(document.getElementById('editKritikStok').value) || 50;
@@ -673,13 +673,14 @@ if (window.isAdmin) {
 
         window.addNewPaint = async function() {
             const np = {
-                id: window.paints.length + 1,
+                id: Date.now(), 
                 marka: document.getElementById('newMarka').value.toUpperCase(),
-                ad: document.getElementById('newIsim').value,
+                isim: document.getElementById('newIsim').value, 
                 kod: document.getElementById('newKod').value,
                 stok: parseFloat(document.getElementById('newStok').value) || 0,
                 kritikStok: parseFloat(document.getElementById('newKritikStok').value) || 50
             };
+            
             if (!np.marka || !np.ad) { alert('❌ Marka ve boya adı zorunlu!'); return; }
             window.paints.push(np);
             await set(ref(db, 'paints'), window.paints);
